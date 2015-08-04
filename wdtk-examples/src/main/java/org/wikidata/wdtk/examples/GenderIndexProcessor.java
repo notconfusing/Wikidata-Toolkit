@@ -73,6 +73,8 @@ public class GenderIndexProcessor implements EntityDocumentProcessor {
 		public List<EntityIdValue> ethnicGroupValues = Collections.emptyList();
 		public List<EntityIdValue> countryOfCitizenshipValues = Collections.emptyList();
 		public List<EntityIdValue> placeOfBirthValues = Collections.emptyList();
+	        public List<EntityIdValue> occupationValues = Collections.emptyList();
+		public List<EntityIdValue> fieldOfWorkValues = Collections.emptyList();
 		
 
 		public Person(ItemIdValue itemIdValue){
@@ -147,6 +149,12 @@ public class GenderIndexProcessor implements EntityDocumentProcessor {
 			case "P19": // P19 is "place of birth"
 				person.placeOfBirthValues = getItemIdValueList(statementGroup);
 				break;
+			case "P106": // P106 is "occupation"
+				person.occupationValues = getItemIdValueList(statementGroup);
+				break;
+			case "P101": // P101 is "field of work"
+				person.fieldOfWorkValues = getItemIdValueList(statementGroup);
+				break;
 				
 			case "P569": // P569 is "birth date"
 				person.birthYear = getYearValueIfAny(statementGroup);
@@ -194,7 +202,7 @@ public class GenderIndexProcessor implements EntityDocumentProcessor {
 		try (PrintStream out = new PrintStream(
 				ExampleHelpers.openExampleFileOuputStream(fileName))) {
 
-			out.print("qid,dob,dod,gender,ethnic_group,citizenship,place_of_birth,site_links");
+			out.print("qid,dob,dod,gender,ethnic_group,citizenship,place_of_birth,occupation,field_of_work,site_links");
 			out.println();
 			for (Person person : People) {
 				//qid
@@ -237,6 +245,20 @@ public class GenderIndexProcessor implements EntityDocumentProcessor {
 				}
 				out.print(",");
 				
+				//citizenship
+				for(EntityIdValue occupation: person.occupationValues){
+					out.print(occupation.getId());
+					out.print("|");
+				}
+				out.print(",");
+				
+				//place of birth
+				for(EntityIdValue fow: person.fieldOfWorkValues){
+					out.print(fow.getId());
+					out.print("|");
+				}
+				out.print(",");
+
 				//site_links
 				for(SiteLink siteLink : person.siteLinks){
 					out.print(siteLink.getSiteKey());
